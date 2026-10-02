@@ -128,7 +128,7 @@ eksctl create nodegroup --cluster=lasvanthi-eks \
                        --nodes-max=4 \
                        --node-volume-size=20 \
                        --ssh-access \
-                       --ssh-public-key=Kastro \
+                       --ssh-public-key=key \
                        --managed \
                        --asg-access \
                        --external-dns-access \
