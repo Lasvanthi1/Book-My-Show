@@ -10,8 +10,8 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        DOCKER_IMAGE = 'akshu20791/bms:latest'
-        EKS_CLUSTER_NAME = 'akshat-eks'
+        DOCKER_IMAGE = 'lasvanthi/bms:latest'
+        EKS_CLUSTER_NAME = 'lasvanthi-eks'
         AWS_REGION = 'us-east-1'
     }
 
@@ -24,7 +24,7 @@ pipeline {
 
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/akshu20791/Book-My-Show.git'
+                git branch: 'main', url: 'https://github.com/Lasvanthi1/Book-My-Show.git'
                 sh 'ls -la'  // Verify files after checkout
             }
         }
@@ -95,30 +95,35 @@ pipeline {
         }
 
         stage('Deploy to EKS Cluster') {
-            steps {
-                script {
-                    sh '''
-                    echo "Verifying AWS credentials..."
-                    aws sts get-caller-identity
+             steps {
+                 sh '''
+                 echo "Copying Kubernetes manifests to deployment server..."
 
-                    echo "Configuring kubectl for EKS cluster..."
-                    aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+                 scp deployment.yml service.yml ubuntu@10.0.2.20:/tmp/
+                 echo "Connecting to deployment server..."
 
-                    echo "Verifying kubeconfig..."
-                    kubectl config view
+                 ssh ubuntu@10.0.2.20 << EOF
 
-                    echo "Deploying application to EKS..."
-                    kubectl apply -f deployment.yml
-                    kubectl apply -f service.yml
+                 echo "Verifying AWS credentials..."
+                 aws sts get-caller-identity
 
-                    echo "Verifying deployment..."
-                    kubectl get pods
-                    kubectl get svc
-                    '''
-                }
-            }
+                 echo "Configuring kubectl for EKS..."
+                 aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION}
+                 echo "Verifying EKS connection..."
+                 kubectl get nodes
+
+                 echo "Deploying application..."
+                 kubectl apply -f /tmp/deployment.yml
+                 kubectl apply -f /tmp/service.yml
+
+                 echo "Verifying deployment..."
+                 kubectl get pods
+                 kubectl get svc
+
+                 EOF
+                 '''
+         }
         }
-    }
 
     post {
         always {
