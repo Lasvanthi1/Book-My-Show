@@ -13,6 +13,7 @@ pipeline {
         DOCKER_IMAGE = 'lasvanthi/bms:latest'
         EKS_CLUSTER_NAME = 'lasvanthi-eks'
         AWS_REGION = 'us-east-1'
+        DEPLOY_SERVER= '23.20.148.14'
     }
 
     stages {
@@ -99,10 +100,10 @@ pipeline {
                  sh '''
                  echo "Copying Kubernetes manifests to deployment server..."
 
-                 scp deployment.yml service.yml ubuntu@10.0.2.20:/tmp/
+                 scp deployment.yml service.yml ubuntu@DEPLOY_SERVER:/tmp/
                  echo "Connecting to deployment server..."
 
-                 ssh ubuntu@10.0.2.20 << EOF
+                 ssh ubuntu@DEPLOY_SERVER << EOF
 
                  echo "Verifying AWS credentials..."
                  aws sts get-caller-identity
