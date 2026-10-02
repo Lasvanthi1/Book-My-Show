@@ -10,7 +10,7 @@ Step 1: Basic Setup
 ================================================================
 1.1. Launch 1 VM (Ubuntu, 24.04, t2.large, 28 GB, Name: BMS-Server)
 ================================================================
-Open below ports for the Security Group attached to the above VM
+Open below ports for the Security Group attached to the above-- VM
 Type                  Protocol   Port range                              
 SMTP                  TCP           25 
 (Used for sending emails between mail servers)
@@ -95,10 +95,10 @@ eksctl version
 1.3.4. Create EKS Cluster
 Execute the below commands as separate set
 (a)
-eksctl create cluster --name=kastro-eks \
+eksctl create cluster --name=lasvanthi-eks \
                       --region=us-east-1 \
                       --zones=us-east-1a,us-east-1b \
-                      --version=1.30 \
+                      --version=1.31 \
                       --without-nodegroup
 
 It will take 5-10 minutes to create the cluster
@@ -107,7 +107,7 @@ Goto EKS Console and verify the cluster.
 (b)
 eksctl utils associate-iam-oidc-provider \
     --region us-east-1 \
-    --cluster kastro-eks \
+    --cluster lasvanthi-eks \
     --approve
 
 The above command is crucial when setting up an EKS cluster because it enables IAM roles for service accounts (IRSA)
@@ -119,7 +119,7 @@ Without this, these services will not be able to access AWS resources securely.
 (c)
 Before executing the below command, in the 'ssh-public-key' keep the  '<PEM FILE NAME>' (dont give .pem. Just give the pem file name) which was used to create Jenkins Server
 
-eksctl create nodegroup --cluster=kastro-eks \
+eksctl create nodegroup --cluster=lasvanthi-eks \
                        --region=us-east-1 \
                        --name=node2 \
                        --node-type=t3.medium \
